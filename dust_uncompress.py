@@ -1,13 +1,14 @@
-# from .block import block
-import tkinter
-from PIL import Image, ImageDraw, ImageTk
 import json
+from PIL import Image, ImageDraw, ImageTk
 
 def read_int16(buffer,index):
     if not index+1 > len(buffer):
         return int.from_bytes(buffer[index:index+1],byteorder="little")
     else:
         raise IndexError("Read Int16 index out of range.")
+
+def init_argparser():
+    pass
 
 class dust_texture():
     def __init__(self, path):
@@ -25,10 +26,10 @@ class dust_texture():
             buffer = bytearray(f.read())
 
         # Read header values
-        self.width = read_int16(buffer,0)
-        self.height = read_int16(buffer,2)
-        self.offset_x = read_int16(buffer,4)
-        self.offset_y = read_int16(buffer,6)
+        self.height = read_int16(buffer,0)
+        self.width = read_int16(buffer,2)
+        self.offset_y = read_int16(buffer,4)
+        self.offset_x = read_int16(buffer,6)
 
         return buffer[8:]
 
@@ -57,7 +58,7 @@ class dust_texture():
             buffer_index += 2
 
             # offsets the pixels so they are drawn from the middle outwards
-            horizontal_offset = self.offset_x - int(scanline_count/2)
+            horizontal_offset = self.offset_x - int(scanline_count/2) + 1
 
             debug_scanline = []   # DEBUG: list for printing values in scanline
             # draw pixels
@@ -93,8 +94,10 @@ class dust_texture():
             print(debug_scanline)
 
         self.img.show()
+        self.img.save(".png")
 
 def main():
+
     texture = dust_texture("Textures/apple")
     texture.draw_texture()
 
