@@ -1,0 +1,41 @@
++ header_block_data
+Dit is het eerste block van de gamedata file waar onder andere de Color Lookup Table (CLUT) in zit.
+Ik heb nog niet exact gevonden hoe zij hier de exacte kleuren uit halen. Ik kom in ieder geval erg in de buurt als ik vanaf offset 36 het volgende inlees:
+	- Int32: ID
+	- Int32: R
+	- Int32: G
+	- Int32: B
+Ik kom dan tot een waarde van 0-255 per kleur door int((number / 65535) * 255)
+Hier zal dus sowieso nog in getweaked moeten worden, maar het zit iig in de buurt.
+
++ CLUT.png
+Dit is mijne interpretatie van de CLUT zoals hierboven uitgelegd, maar dan visueel weergegeven in een 16x16 palet.
+
++ clut.txt
+Dit is een json lijst van de rgb waarde uit de CLUT zoals ik ze heb geinterpreteerd (0-255).
+Je kan dit als startpunt gebruiken als je je eigen script wilt schrijven
+
++ texture_binary
+Dit is de texture data die getekend moet worden.
+Zoals ik het begrijp teken je lijn voor lijn van boven naar beneden. Zo'n lijn noem ik in dit geval een scanline.
+
+Het bestand begint met 4 bytes aan header-informatie:
+	- 1: Int16: breedte
+	- 2: Int16: hoogte
+	- 3: Int16: offset horizontaal (denk ik)
+	- 4: Int16: offset verticaal (denk ik)
+
+Telkens als je een byte tegenkomt gevolgd door een nul byte (0x00) dan geeft dat aan dat er zoveel bytes in de scanline zitten. Bijvoorbeeld: 
+0500 490BC58151
+0600 490FC9C2984D
+
+Ik teken mijn plaatje door te zorgen dat de middelste byte van de scanline de offset krijgt die ik in de derde byte van de header heb ingelezen.
+Als je het plaatje dan tekent krijg je "rendered.png" Je ziet hierin dat er veel witte pixels zitten die te maken lijken te hebben met de compressie.
+
+De vraag is dus, kunnen we iets halen uit die witte pixels qua waarde of bits. Of is het zo dat er nog een lookup-table zit in de executable van het spel met patronen die je op kan zoeken aan de hand van die bytes.
+
++ rendered.png
+Dit is het resultaat als je het plaatje tekent zonder rekening te houden met compressie.
+
++ ingame.png
+Dit is een screenshot uit het spel als voorbeeld hoe het plaatje eruit zou moeten zien. Dit is niet pixel voor pixel hetzelfde, maar meer als vergelijking. Ik zal deze nog een keer vervangen voor ingame shots die pixel voor pixel gelijk zijn. Dan kunnen we precies vergelijken.
